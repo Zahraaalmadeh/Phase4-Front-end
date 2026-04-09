@@ -1,89 +1,163 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Layout from "../Layout";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import "../styles/dashboard.css";
 
-function AddUser({ setPage ,currentPage}) {
+function AddUser({ onAddUser, onUpdateUser, editingUser, clearEditingUser }) {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "Staff",
+    status: "Active",
+    phone: "",
+    notes: "",
+  });
+
+  useEffect(() => {
+    if (editingUser) {
+      setFormData({
+        id: editingUser.id,
+        name: editingUser.name || "",
+        email: editingUser.email || "",
+        password: "",
+        role: editingUser.role || "Staff",
+        status: editingUser.status || "Active",
+        phone: editingUser.phone || "",
+        notes: editingUser.notes || "",
+      });
+    } else {
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        role: "Staff",
+        status: "Active",
+        phone: "",
+        notes: "",
+      });
+    }
+  }, [editingUser]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!formData.name.trim() || !formData.email.trim()) {
+      alert("Please fill in name and email.");
+      return;
+    }
+
+    if (editingUser) {
+      onUpdateUser(formData);
+      alert("User updated successfully.");
+    } else {
+      onAddUser(formData);
+      alert("User added successfully.");
+    }
+
+    clearEditingUser();
+    navigate("/users");
+  };
+
   return (
-    <div className="layout">
-      <Sidebar setPage={setPage} currentPage={currentPage}/>
+    <Layout>
+      <div className="page-shell">
+        <Sidebar />
 
-      <main className="main-content">
-        <Header />
-
-        <div className="page-top">
-  <div>
-    <h2 className="page-title">Add User</h2>
-    <p className="page-subtitle">Create a new user account and assign a role.</p>
-  </div>
-
-  <button className="secondary-btn" onClick={() => setPage("users")}>
-    Back
-  </button>
-</div>
-
-        <div className="card form-card">
-          <form
-            className="user-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("User saved!");
-              setPage("users");
-            }}
-          >
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Full Name</label>
-                <input type="text" placeholder="Enter full name" />
-              </div>
-
-              <div className="form-group">
-                <label>Email Address</label>
-                <input type="email" placeholder="Enter email address" />
-              </div>
-
-              <div className="form-group">
-                <label>Password</label>
-                <input type="password" placeholder="Enter password" />
-              </div>
-
-              <div className="form-group">
-                <label>Role</label>
-                <select>
-                  <option>Select role</option>
-                  <option>Admin</option>
-                  <option>Staff</option>
-                  <option>Manager</option>
-                  <option>Supplier</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Status</label>
-                <select>
-                  <option>Active</option>
-                  <option>Inactive</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Phone Number</label>
-                <input type="text" placeholder="Enter phone number" />
-              </div>
+        <main className="page-main">
+          <div className="page-top">
+            <div>
+              <h2 className="page-title">{editingUser ? "Edit User" : "Add User"}</h2>
+              <p className="page-subtitle">
+                {editingUser ? "Update user account details." : "Create a new user account and assign a role."}
+              </p>
             </div>
 
-            <div className="form-group full-width">
-              <label>Notes</label>
-              <textarea rows="4" placeholder="Add notes about this user"></textarea>
-            </div>
+            <button
+              className="secondary-btn"
+              onClick={() => {
+                clearEditingUser();
+                navigate("/users");
+              }}
+            >
+              Back
+            </button>
+          </div>
 
-            <div className="form-actions">
-              <button type="button" className="secondary-btn">Cancel</button>
-              <button type="submit" className="primary-btn">Save User</button>
-            </div>
-          </form>
-        </div>
-      </main>
-    </div>
+          <div className="card form-card">
+            <form className="user-form" onSubmit={handleSubmit}>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input name="name" value={formData.name} onChange={handleChange} />
+                </div>
+
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input name="email" value={formData.email} onChange={handleChange} />
+                </div>
+
+                <div className="form-group">
+                  <label>Password</label>
+                  <input type="password" name="password" value={formData.password} onChange={handleChange} />
+                </div>
+
+                <div className="form-group">
+                  <label>Role</label>
+                  <select name="role" value={formData.role} onChange={handleChange}>
+                    <option>Admin</option>
+                    <option>Staff</option>
+                    <option>Manager</option>
+                    <option>Supplier</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Status</label>
+                  <select name="status" value={formData.status} onChange={handleChange}>
+                    <option>Active</option>
+                    <option>Inactive</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Phone Number</label>
+                  <input name="phone" value={formData.phone} onChange={handleChange} />
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginTop: "20px" }}>
+                <label>Notes</label>
+                <textarea rows="4" name="notes" value={formData.notes} onChange={handleChange}></textarea>
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  onClick={() => {
+                    clearEditingUser();
+                    navigate("/users");
+                  }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="primary-btn">
+                  {editingUser ? "Update User" : "Save User"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </main>
+      </div>
+    </Layout>
   );
 }
 

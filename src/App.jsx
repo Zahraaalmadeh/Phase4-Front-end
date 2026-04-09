@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import ManageUsers from "./pages/ManageUsers";
 import AddUser from "./pages/AddUser";
@@ -8,33 +9,74 @@ import ConfigureAlerts from "./pages/ConfigureAlerts";
 import ManageNotifications from "./pages/ManageNotifications";
 
 function App() {
-  const [page, setPage] = useState("dashboard");
+  const [users, setUsers] = useState([
+    { id: 1, name: "John Doe", email: "john@email.com", role: "Admin", status: "Active", phone: "", notes: "" },
+    { id: 2, name: "Sarah Ackles", email: "sarah@email.com", role: "Staff", status: "Active", phone: "", notes: "" },
+    { id: 3, name: "Ali Hadi", email: "ali@email.com", role: "Manager", status: "Inactive", phone: "", notes: "" },
+    { id: 4, name: "Mia Cruz", email: "mia@email.com", role: "Supplier", status: "Active", phone: "", notes: "" },
+  ]);
 
-  if (page === "dashboard") {
-    return <Dashboard setPage={setPage} currentPage={page} />;
-  }
+  const [editingUser, setEditingUser] = useState(null);
 
-  if (page === "users") {
-    return <ManageUsers setPage={setPage} currentPage={page} />;
-  }
+  const addUser = (newUser) => {
+    setUsers((prev) => [...prev, { ...newUser, id: Date.now() }]);
+  };
 
-  if (page === "add-user") {
-    return <AddUser setPage={setPage} currentPage={page} />;
-  }
-  if (page === "categories") {
-  return <ManageCategories setPage={setPage} currentPage={page} />;
-}
-if (page === "logs") {
-  return <ActivityLogs setPage={setPage} currentPage={page} />;
-}
-if (page === "alerts") {
-  return <ConfigureAlerts setPage={setPage} currentPage={page} />;
-}
-if (page === "notifications") {
-  return <ManageNotifications setPage={setPage} currentPage={page} />;
-}
+  const updateUser = (updatedUser) => {
+    setUsers((prev) =>
+      prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+    );
+    setEditingUser(null);
+  };
 
-  return <Dashboard setPage={setPage} currentPage={page} />;
+  const deleteUser = (id) => {
+    setUsers((prev) => prev.filter((user) => user.id !== id));
+  };
+
+  const startEditUser = (user) => {
+    setEditingUser(user);
+  };
+
+  const clearEditingUser = () => {
+    setEditingUser(null);
+  };
+
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+      <Route path="/dashboard" element={<Dashboard />} />
+
+      <Route
+        path="/users"
+        element={
+          <ManageUsers
+            users={users}
+            onDeleteUser={deleteUser}
+            onEditUser={startEditUser}
+            onAddUserClick={clearEditingUser}
+          />
+        }
+      />
+
+      <Route
+        path="/add-user"
+        element={
+          <AddUser
+            onAddUser={addUser}
+            onUpdateUser={updateUser}
+            editingUser={editingUser}
+            clearEditingUser={clearEditingUser}
+          />
+        }
+      />
+
+      <Route path="/categories" element={<ManageCategories />} />
+      <Route path="/logs" element={<ActivityLogs />} />
+      <Route path="/alerts" element={<ConfigureAlerts />} />
+      <Route path="/notifications" element={<ManageNotifications />} />
+    </Routes>
+  );
 }
 
 export default App;

@@ -1,8 +1,7 @@
+import Layout from "../Layout";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import "../styles/dashboard.css";
 
-function ActivityLogs({ setPage, currentPage }) {
+function ActivityLogs() {
   const logs = [
     {
       id: 1,
@@ -20,7 +19,7 @@ function ActivityLogs({ setPage, currentPage }) {
     },
     {
       id: 3,
-      user: "Ali Hadi",
+      user: "Ali Khan",
       action: "Changed alert settings",
       module: "Alerts",
       time: "Today, 11:05 AM",
@@ -35,72 +34,52 @@ function ActivityLogs({ setPage, currentPage }) {
   ];
 
   return (
-    <div className="layout">
-      <Sidebar setPage={setPage} currentPage={currentPage} />
+    <Layout>
+      <div className="page-shell">
+        <Sidebar />
 
-      <main className="main-content">
-        <Header />
-
-        <div className="page-top">
-          <div>
-            <h2 className="page-title">Activity Logs</h2>
-            <p className="page-subtitle">
-              Review recent actions and system activity.
-            </p>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="table-toolbar">
-            <input
-              className="search-input"
-              type="text"
-              placeholder="Search activity..."
-            />
-
-            <select className="filter-select">
-              <option>All Modules</option>
-              <option>Users</option>
-              <option>Categories</option>
-              <option>Alerts</option>
-              <option>Notifications</option>
-            </select>
+        <main className="page-main">
+          <div className="page-top">
+            <div>
+              <h2 className="page-title">Activity Logs</h2>
+              <p className="page-subtitle">Review recent actions and system activity.</p>
+            </div>
           </div>
 
-          <div className="table-wrap">
-            <table className="user-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Action</th>
-                  <th>Module</th>
-                  <th>Time</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {logs.map((log) => (
-                  <tr key={log.id}>
-                    <td>{log.user}</td>
-                    <td>{log.action}</td>
-                    <td>
-                      <span className="role-badge">{log.module}</span>
-                    </td>
-                    <td>{log.time}</td>
+          <div className="card">
+            <div className="table-wrap">
+              <table className="user-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Module</th>
+                    <th>Time</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
 
-            {logs.length === 0 && (
-              <p style={{ textAlign: "center", padding: "20px" }}>
-                No activity found
-              </p>
-            )}
+                <tbody>
+                  {logs.map((log) => (
+                    <tr key={log.id}>
+                      <td>{log.user}</td>
+                      <td>{log.action}</td>
+                      <td>
+                        <span className="role-badge">{log.module}</span>
+                      </td>
+                      <td>{log.time}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {logs.length === 0 && (
+                <p style={{ textAlign: "center", padding: "20px" }}>No activity found</p>
+              )}
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </Layout>
   );
 }
 
