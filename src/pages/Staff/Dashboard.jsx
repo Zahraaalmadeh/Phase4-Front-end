@@ -12,7 +12,8 @@ function Dashboard() {
         </div>
 
         <div className="box"     
-        onClick={() => navigate("/inventory")}>
+        onClick={() => navigate("/staff-inventory\n" +
+            " ")}>
         <h3>View inventory</h3>
         </div>
 
