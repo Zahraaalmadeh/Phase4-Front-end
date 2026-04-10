@@ -2,6 +2,10 @@ import AvailabilityForm from "./AvaliabilityForm";
 import DeliveryEstimateForm from "./DeliveryEstimateForm";
 import StatusUpdateForm from "./StatusUpdateForm";
 
+function getBadgeClass(status) {
+    return String(status).toLowerCase().replace(/\s+/g, "-");
+}
+
 export default function RequestDetails({
                                            request,
                                            onSaveAvailability,
@@ -13,7 +17,7 @@ export default function RequestDetails({
             <div className="card inner-card request-details-card">
                 <div className="empty-state compact">
                     <h3>Select a request</h3>
-                    <p>Choose a request from the left side to view full details.</p>
+                    <p>Choose a request from the left panel to view its full details.</p>
                 </div>
             </div>
         );
@@ -27,11 +31,7 @@ export default function RequestDetails({
                     <h3>{request.id}</h3>
                 </div>
 
-                <span
-                    className={`badge ${String(request.status)
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")}`}
-                >
+                <span className={`badge ${getBadgeClass(request.status)}`}>
                     {request.status}
                 </span>
             </div>
