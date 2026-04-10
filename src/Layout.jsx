@@ -27,7 +27,7 @@ function Layout({
     const [showNotifications, setShowNotifications] = useState(false);
 
     const session = getStoredJSON("session", null);
-    const isSupplier = session?.role === "supplier";
+    const role = session?.role;
 
     const supplierPaths = ["/supplier", "/supplier-dashboard"];
     const isSupplierPage = supplierPaths.includes(location.pathname);
@@ -66,17 +66,29 @@ function Layout({
     };
 
     const handleHomeClick = () => {
-        if (isSupplier) {
-            navigate("/supplier");
+        if (!session) {
+            navigate("/login");
             return;
         }
 
-        navigate("/dashboard");
+        if (role === "admin") {
+            navigate("/dashboard");
+        } else if (role === "staff") {
+            navigate("/staffDashboard");
+        } else if (role === "supplier") {
+            navigate("/supplier");
+        } else {
+            navigate("/");
+        }
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("session");
-        navigate("/login");
+        const confirmLogout = window.confirm("Are you sure you want to log out?");
+
+        if (confirmLogout) {
+            localStorage.removeItem("session");
+            navigate("/login");
+        }
     };
 
     return (
@@ -92,15 +104,11 @@ function Layout({
                             onClick={handleBellClick}
                             aria-label="Notifications"
                         >
-                            <img
-                                src={Bell}
-                                alt="Notifications"
-                                className="icon-img"
-                            />
+                            <img src={Bell} alt="Notifications" className="icon-img" />
                             {isSupplierPage && unreadCount > 0 && (
                                 <span className="notification-badge">
-                                    {unreadCount > 99 ? "99+" : unreadCount}
-                                </span>
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
                             )}
                         </button>
 
@@ -130,15 +138,13 @@ function Layout({
                                                 className={`notification-popover-item ${
                                                     item.unread ? "unread" : ""
                                                 }`}
-                                                onClick={() =>
-                                                    handleNotificationClick(item.id)
-                                                }
+                                                onClick={() => handleNotificationClick(item.id)}
                                             >
                                                 <div className="notification-item-top">
                                                     <strong>{item.product}</strong>
                                                     <span className="notification-request-id">
-                                                        {item.requestId}
-                                                    </span>
+                            {item.requestId}
+                          </span>
                                                 </div>
 
                                                 <div className="notification-meta">
