@@ -147,7 +147,7 @@ function Orders({ orders, setOrders  }) {
     }
 
     return (
-        <Layout>
+
             <div className="page-with-sidebar">
             <Sidebar />
             <div className="main-content-area">
@@ -322,7 +322,7 @@ function Orders({ orders, setOrders  }) {
     </div>
     </div>
     </div>
-    </Layout>
+
     );
 }
 
