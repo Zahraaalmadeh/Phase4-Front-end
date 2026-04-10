@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const allowedProgression = {
     New: ["Confirmed", "Shipped"],
@@ -24,6 +24,10 @@ export default function StatusUpdateForm({ request, onSave }) {
         setMessageType("");
     }, [request]);
 
+    const nextStatuses = useMemo(() => {
+        return allowedProgression[request?.status] || [];
+    }, [request]);
+
     const handleSubmit = () => {
         if (!status) {
             setMessage("Please select a status.");
@@ -31,8 +35,7 @@ export default function StatusUpdateForm({ request, onSave }) {
             return;
         }
 
-        const validNextStatuses = allowedProgression[request.status] || [];
-        if (!validNextStatuses.includes(status)) {
+        if (!nextStatuses.includes(status)) {
             setMessage(`Cannot mark ${status} directly from ${request.status}.`);
             setMessageType("error");
             return;
@@ -63,41 +66,56 @@ export default function StatusUpdateForm({ request, onSave }) {
         <div className="form-block polished-form-card">
             <div className="form-card-header">
                 <h4>Status Update</h4>
-                <p>Update the request progress and shipment state.</p>
+                <p>Update the supply progress and shipment tracking information.</p>
             </div>
 
-            <label>Status Update</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="">Select status</option>
-                <option value="Confirmed">Confirmed</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
-            </select>
+            <div className="form-grid">
+                <div>
+                    <label>Status Update</label>
+                    <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                        <option value="">Select status</option>
 
-            <label>Tracking Number</label>
-            <input
-                type="text"
-                value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
-                placeholder="Required for shipped items"
-                disabled={status !== "Shipped"}
-            />
+                        {nextStatuses.length === 0 ? (
+                            <option value="" disabled>
+                                No further updates available
+                            </option>
+                        ) : (
+                            nextStatuses.map((item) => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))
+                        )}
+                    </select>
+                </div>
 
-            <button className="btn btn-primary" type="button" onClick={handleSubmit}>
-                Update Status
-            </button>
+                <div>
+                    <label>Tracking Number</label>
+                    <input
+                        type="text"
+                        value={trackingNumber}
+                        onChange={(e) => setTrackingNumber(e.target.value)}
+                        placeholder="Required for shipped items"
+                        disabled={status !== "Shipped"}
+                    />
+                </div>
 
-            {message && (
-                <p
-                    className={
-                        messageType === "error"
-                            ? "status-danger"
-                            : "status-success"
-                    }
-                >
-                    {message}
-                </p>
-            )}
+                <button className="btn btn-primary" type="button" onClick={handleSubmit}>
+                    Update Status
+                </button>
+
+                {message && (
+                    <p
+                        className={
+                            messageType === "error"
+                                ? "status-danger"
+                                : "status-success"
+                        }
+                    >
+                        {message}
+                    </p>
+                )}
+            </div>
         </div>
     );
 }
