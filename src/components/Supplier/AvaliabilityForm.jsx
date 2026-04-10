@@ -55,45 +55,51 @@ export default function AvailabilityForm({ request, onSave }) {
         <div className="form-block polished-form-card">
             <div className="form-card-header">
                 <h4>Confirm Availability</h4>
-                <p>Respond to the requested product availability.</p>
+                <p>Let the inventory manager know whether the item can be supplied.</p>
             </div>
 
-            <label>Availability Status</label>
-            <select
-                value={availabilityStatus}
-                onChange={(e) => setAvailabilityStatus(e.target.value)}
-            >
-                <option value="">Select status</option>
-                <option value="Available">Available</option>
-                <option value="Partially Available">Partially Available</option>
-                <option value="Not Available">Not Available</option>
-            </select>
+            <div className="form-grid">
+                <div>
+                    <label>Availability Status</label>
+                    <select
+                        value={availabilityStatus}
+                        onChange={(e) => setAvailabilityStatus(e.target.value)}
+                    >
+                        <option value="">Select status</option>
+                        <option value="Available">Available</option>
+                        <option value="Partially Available">Partially Available</option>
+                        <option value="Not Available">Not Available</option>
+                    </select>
+                </div>
 
-            <label>Available Quantity</label>
-            <input
-                type="number"
-                min="1"
-                value={availableQuantity}
-                onChange={(e) => setAvailableQuantity(e.target.value)}
-                placeholder="Required if partially available"
-                disabled={availabilityStatus !== "Partially Available"}
-            />
+                <div>
+                    <label>Available Quantity</label>
+                    <input
+                        type="number"
+                        min="1"
+                        value={availableQuantity}
+                        onChange={(e) => setAvailableQuantity(e.target.value)}
+                        placeholder="Required if partially available"
+                        disabled={availabilityStatus !== "Partially Available"}
+                    />
+                </div>
 
-            <button className="btn btn-primary" type="button" onClick={handleSubmit}>
-                Submit Availability
-            </button>
+                <button className="btn btn-primary" type="button" onClick={handleSubmit}>
+                    Submit Availability
+                </button>
 
-            {message && (
-                <p
-                    className={
-                        messageType === "error"
-                            ? "status-danger"
-                            : "status-success"
-                    }
-                >
-                    {message}
-                </p>
-            )}
+                {message && (
+                    <p
+                        className={
+                            messageType === "error"
+                                ? "status-danger"
+                                : "status-success"
+                        }
+                    >
+                        {message}
+                    </p>
+                )}
+            </div>
         </div>
     );
 }
