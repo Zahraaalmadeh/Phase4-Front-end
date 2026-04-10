@@ -32,7 +32,7 @@ function LogIn() {
 },
     {username:"manager",
     password:"1234",
-    role:"Manager",
+    role:"manager",
     email:"manager@makhzan.com",
     active:true,
     }
@@ -75,6 +75,8 @@ function LogIn() {
       navigate("/dashboard");
     } else if (foundUser.role === "supplier") {
       navigate("/supplier");
+    }else if (foundUser.role === "manager") {
+      navigate("/im-dashboard");
     } else {
       navigate("/");
     }

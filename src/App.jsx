@@ -9,6 +9,10 @@ import ConfigureAlerts from "./pages/ConfigureAlerts";
 import ManageNotifications from "./pages/ManageNotifications";
 import SupplierPage from "./pages/SupplierPage";
 import LogIn from "./logIn.jsx";
+import { useEffect } from "react";
+import ImDashboard from "./pages/inventory-manager/ipages/im-Dashboard.jsx"
+import Inventory from "./pages/inventory-manager/ipages/Inventory.jsx"
+import Orders from "./pages/inventory-manager/ipages/Orders.jsx";
 
 function App() {
     const [users, setUsers] = useState([
@@ -17,6 +21,21 @@ function App() {
         { id: 3, name: "Ali Hadi", email: "ali@email.com", role: "Manager", status: "Inactive", phone: "", notes: "" },
         { id: 4, name: "Mia Cruz", email: "mia@email.com", role: "Supplier", status: "Active", phone: "", notes: "" },
     ]);
+
+    const [items, setItems] = useState(() => {
+    const savedItems = localStorage.getItem("items");
+        return savedItems ? JSON.parse(savedItems) : [];
+    });
+    useEffect(() => {
+      localStorage.setItem("items", JSON.stringify(items));
+      }, [items]);
+    const [orders, setOrders] = useState(() => {
+    const savedOrders = localStorage.getItem("orders");
+        return savedOrders ? JSON.parse(savedOrders) : [];
+    });
+    useEffect(() => {
+    localStorage.setItem("orders", JSON.stringify(orders));
+    }, [orders]);
 
     const [editingUser, setEditingUser] = useState(null);
 
@@ -49,6 +68,10 @@ function App() {
             <Route path="/login" element={<LogIn />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/supplier" element={<SupplierPage />} />
+            <Route path="/im-dashboard" element={<ImDashboard items={items}/>} />
+            <Route path="/inventory" element={<Inventory items={items} setItems={setItems}/>}/>
+            <Route path="/orders" element={<Orders orders={orders} setOrders={setOrders} />} />
+         
 
             <Route
                 path="/users"
