@@ -17,8 +17,8 @@ function getStoredJSON(key, fallbackValue) {
 
 function Layout({
                     children,
-                    supplierNotifications = [],
-                    onOpenSupplierNotification,
+                    notifications = [],
+                    onOpenNotification,
                 }) {
     const navigate = useNavigate();
     const location = useLocation();
@@ -29,13 +29,9 @@ function Layout({
     const session = getStoredJSON("session", null);
     const role = session?.role;
 
-    const supplierPaths = ["/supplier", "/supplier-dashboard"];
-    const isSupplierPage = supplierPaths.includes(location.pathname);
-
     const unreadCount = useMemo(() => {
-        if (!isSupplierPage) return 0;
-        return supplierNotifications.filter((item) => item.unread).length;
-    }, [isSupplierPage, supplierNotifications]);
+        return notifications.filter((item) => item.unread).length;
+    }, [notifications]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -54,13 +50,12 @@ function Layout({
     }, []);
 
     const handleBellClick = () => {
-        if (!isSupplierPage) return;
         setShowNotifications((prev) => !prev);
     };
 
     const handleNotificationClick = (notificationId) => {
-        if (onOpenSupplierNotification) {
-            onOpenSupplierNotification(notificationId);
+        if (onOpenNotification) {
+            onOpenNotification(notificationId);
         }
         setShowNotifications(false);
     };
@@ -105,33 +100,33 @@ function Layout({
                             aria-label="Notifications"
                         >
                             <img src={Bell} alt="Notifications" className="icon-img" />
-                            {isSupplierPage && unreadCount > 0 && (
+                            {unreadCount > 0 && (
                                 <span className="notification-badge">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
+                                    {unreadCount > 99 ? "99+" : unreadCount}
+                                </span>
                             )}
                         </button>
 
-                        {isSupplierPage && showNotifications && (
+                        {showNotifications && (
                             <div className="notification-popover">
                                 <div className="notification-popover-header">
                                     <div>
                                         <h4>Notifications</h4>
                                         <p>
-                                            {supplierNotifications.length} item
-                                            {supplierNotifications.length !== 1 ? "s" : ""}
+                                            {notifications.length} item
+                                            {notifications.length !== 1 ? "s" : ""}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="notification-popover-list">
-                                    {supplierNotifications.length === 0 ? (
+                                    {notifications.length === 0 ? (
                                         <div className="notification-empty-card">
                                             <strong>No notifications</strong>
                                             <p>No notifications assigned to you.</p>
                                         </div>
                                     ) : (
-                                        supplierNotifications.map((item) => (
+                                        notifications.map((item) => (
                                             <button
                                                 key={item.id}
                                                 type="button"
@@ -141,16 +136,16 @@ function Layout({
                                                 onClick={() => handleNotificationClick(item.id)}
                                             >
                                                 <div className="notification-item-top">
-                                                    <strong>{item.product}</strong>
+                                                    <strong>{item.product || item.title}</strong>
                                                     <span className="notification-request-id">
-                            {item.requestId}
-                          </span>
+                                                        {item.requestId || item.id}
+                                                    </span>
                                                 </div>
 
                                                 <div className="notification-meta">
-                                                    <span>Qty: {item.quantity}</span>
-                                                    <span>{item.urgency}</span>
-                                                    <span>{item.date}</span>
+                                                    {item.quantity && <span>Qty: {item.quantity}</span>}
+                                                    {item.urgency && <span>{item.urgency}</span>}
+                                                    {item.date && <span>{item.date}</span>}
                                                 </div>
                                             </button>
                                         ))
