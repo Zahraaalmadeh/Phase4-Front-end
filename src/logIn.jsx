@@ -17,7 +17,7 @@ function LogIn() {
       active: true,
     },
     {
-      username: "supplier01",
+      username: "supplier",
       password: "1234",
       role: "supplier",
       email: "supplier@makhzan.com",

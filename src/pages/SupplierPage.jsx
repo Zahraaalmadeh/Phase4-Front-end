@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/supplier.css";
 import Layout from "../Layout";
 import SupplierSidebar from "../components/supplier/SupplierSidebar";
 import NotificationList from "../components/supplier/NotificationList";
@@ -23,42 +24,41 @@ const STORAGE_KEYS = {
 };
 
 function getStoredJSON(key, fallbackValue) {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : fallbackValue;
+    try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : fallbackValue;
+    } catch (error) {
+        console.error(`Invalid JSON in localStorage for key: ${key}`, error);
+        return fallbackValue;
+    }
 }
 
 export default function SupplierPage() {
     const navigate = useNavigate();
 
-    const [loggedInUser, setLoggedInUser] = useState(
-        getStoredJSON(STORAGE_KEYS.session, null)
-    );
-
+    const [loggedInUser, setLoggedInUser] = useState(null);
     const [notifications, setNotifications] = useState(
         getStoredJSON(STORAGE_KEYS.notifications, initialNotifications)
     );
-
     const [requests, setRequests] = useState(
         getStoredJSON(STORAGE_KEYS.requests, initialRequests)
     );
-
     const [messages, setMessages] = useState(
         getStoredJSON(STORAGE_KEYS.messages, initialMessages)
     );
-
     const [documents, setDocuments] = useState(
         getStoredJSON(STORAGE_KEYS.documents, initialDocuments)
     );
 
     const [activeTab, setActiveTab] = useState("notifications");
-    const [selectedRequestId, setSelectedRequestId] = useState(
-        initialRequests[0]?.id || null
-    );
+    const [selectedRequestId, setSelectedRequestId] = useState(null);
 
     useEffect(() => {
         const session = getStoredJSON(STORAGE_KEYS.session, null);
 
-        if (!session) {
+        console.log("session from localStorage:", session);
+
+        if (!session || typeof session !== "object") {
             navigate("/login");
             return;
         }
@@ -116,7 +116,7 @@ export default function SupplierPage() {
     }, [assignedRequests, selectedRequestId]);
 
     useEffect(() => {
-        if (!selectedRequestId && assignedRequests.length > 0) {
+        if (assignedRequests.length > 0 && !selectedRequestId) {
             setSelectedRequestId(assignedRequests[0].id);
         }
     }, [assignedRequests, selectedRequestId]);
@@ -143,7 +143,7 @@ export default function SupplierPage() {
                                 action,
                                 timestamp: now,
                             },
-                            ...request.auditHistory,
+                            ...(request.auditHistory || []),
                         ],
                     }
                     : request
