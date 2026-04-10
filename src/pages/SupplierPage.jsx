@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../Layout";
-import SupplierLoginForm from "../components/supplier/SupplierLoginForm";
 import SupplierSidebar from "../components/supplier/SupplierSidebar";
 import NotificationList from "../components/supplier/NotificationList";
 import RequestList from "../components/supplier/RequestList";
@@ -8,7 +8,6 @@ import RequestDetails from "../components/supplier/RequestDetails";
 import MessagePanel from "../components/supplier/MessagePanel";
 import DocumentUploadPanel from "../components/supplier/DocumentUploadPanel";
 import {
-    supplierAccount,
     initialNotifications,
     initialRequests,
     initialMessages,
@@ -16,8 +15,7 @@ import {
 } from "../data/supplierData";
 
 const STORAGE_KEYS = {
-    session: "makhzan_supplier_session",
-    lockUntil: "makhzan_supplier_lock_until",
+    session: "session",
     requests: "makhzan_supplier_requests",
     notifications: "makhzan_supplier_notifications",
     messages: "makhzan_supplier_messages",
@@ -30,25 +28,48 @@ function getStoredJSON(key, fallbackValue) {
 }
 
 export default function SupplierPage() {
+    const navigate = useNavigate();
+
     const [loggedInUser, setLoggedInUser] = useState(
         getStoredJSON(STORAGE_KEYS.session, null)
     );
+
     const [notifications, setNotifications] = useState(
         getStoredJSON(STORAGE_KEYS.notifications, initialNotifications)
     );
+
     const [requests, setRequests] = useState(
         getStoredJSON(STORAGE_KEYS.requests, initialRequests)
     );
+
     const [messages, setMessages] = useState(
         getStoredJSON(STORAGE_KEYS.messages, initialMessages)
     );
+
     const [documents, setDocuments] = useState(
         getStoredJSON(STORAGE_KEYS.documents, initialDocuments)
     );
+
     const [activeTab, setActiveTab] = useState("notifications");
     const [selectedRequestId, setSelectedRequestId] = useState(
         initialRequests[0]?.id || null
     );
+
+    useEffect(() => {
+        const session = getStoredJSON(STORAGE_KEYS.session, null);
+
+        if (!session) {
+            navigate("/login");
+            return;
+        }
+
+        if (session.role !== "supplier") {
+            navigate("/login");
+            return;
+        }
+
+        setLoggedInUser(session);
+    }, [navigate]);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEYS.requests, JSON.stringify(requests));
@@ -69,56 +90,48 @@ export default function SupplierPage() {
         localStorage.setItem(STORAGE_KEYS.documents, JSON.stringify(documents));
     }, [documents]);
 
-    useEffect(() => {
-        if (loggedInUser) {
-            localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(loggedInUser));
-        } else {
-            localStorage.removeItem(STORAGE_KEYS.session);
-        }
-    }, [loggedInUser]);
-
     const assignedRequests = useMemo(() => {
         if (!loggedInUser) return [];
+
         return requests
-            .filter((request) => request.assignedSupplierId === loggedInUser.username)
+            .filter(
+                (request) => request.assignedSupplierId === loggedInUser.username
+            )
             .sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
     }, [requests, loggedInUser]);
 
     const assignedNotifications = useMemo(() => {
         if (!loggedInUser) return [];
+
         return notifications.filter(
             (item) => item.assignedSupplierId === loggedInUser.username
         );
     }, [notifications, loggedInUser]);
 
     const selectedRequest = useMemo(() => {
-        return assignedRequests.find((request) => request.id === selectedRequestId) || null;
+        return (
+            assignedRequests.find((request) => request.id === selectedRequestId) ||
+            null
+        );
     }, [assignedRequests, selectedRequestId]);
 
-    const handleLogin = ({ identifier }) => {
-        const user =
-            identifier === supplierAccount.email ||
-            identifier === supplierAccount.username
-                ? {
-                    username: supplierAccount.username,
-                    email: supplierAccount.email,
-                }
-                : null;
-
-        setLoggedInUser(user);
-        setActiveTab("notifications");
+    useEffect(() => {
         if (!selectedRequestId && assignedRequests.length > 0) {
             setSelectedRequestId(assignedRequests[0].id);
         }
-    };
+    }, [assignedRequests, selectedRequestId]);
 
     const handleLogout = () => {
+        localStorage.removeItem(STORAGE_KEYS.session);
+        localStorage.removeItem("isLoggedIn");
         setLoggedInUser(null);
         setActiveTab("notifications");
+        navigate("/login");
     };
 
     const addAuditEntry = (requestId, action) => {
         const now = new Date().toLocaleString();
+
         setRequests((current) =>
             current.map((request) =>
                 request.id === requestId
@@ -139,7 +152,10 @@ export default function SupplierPage() {
     };
 
     const handleOpenNotification = (notificationId) => {
-        const clicked = assignedNotifications.find((item) => item.id === notificationId);
+        const clicked = assignedNotifications.find(
+            (item) => item.id === notificationId
+        );
+
         if (!clicked) return;
 
         setNotifications((current) =>
@@ -181,7 +197,11 @@ export default function SupplierPage() {
         );
     };
 
-    const handleSaveDelivery = ({ requestId, estimatedDelivery, deliveryNotes }) => {
+    const handleSaveDelivery = ({
+                                    requestId,
+                                    estimatedDelivery,
+                                    deliveryNotes,
+                                }) => {
         setRequests((current) =>
             current.map((request) =>
                 request.id === requestId
@@ -246,16 +266,8 @@ export default function SupplierPage() {
         ]);
     };
 
-    if (!loggedInUser) {
-        return (
-            <div className="supplier-login-shell">
-                <SupplierLoginForm
-                    supplierAccount={supplierAccount}
-                    lockStorageKey={STORAGE_KEYS.lockUntil}
-                    onLogin={handleLogin}
-                />
-            </div>
-        );
+    if (!loggedInUser || loggedInUser.role !== "supplier") {
+        return null;
     }
 
     return (
@@ -265,10 +277,14 @@ export default function SupplierPage() {
                     <div className="topbar-title">
                         <h1>Supplier Dashboard</h1>
                         <p>
-                            Manage assigned requests, update delivery status, upload documents,
-                            and communicate with the inventory manager.
+                            Manage assigned requests, update delivery status, upload
+                            documents, and communicate with the inventory manager.
                         </p>
                     </div>
+
+                    <button className="btn btn-secondary" onClick={handleLogout}>
+                        Logout
+                    </button>
                 </div>
 
                 <div className="dashboard-grid">
