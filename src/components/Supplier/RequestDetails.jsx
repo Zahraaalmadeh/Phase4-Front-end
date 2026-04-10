@@ -1,4 +1,4 @@
-import AvailabilityForm from "./AvailabilityForm";
+import AvailabilityForm from "./AvaliabilityForm";
 import DeliveryEstimateForm from "./DeliveryEstimateForm";
 import StatusUpdateForm from "./StatusUpdateForm";
 
