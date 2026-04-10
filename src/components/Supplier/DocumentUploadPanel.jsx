@@ -4,6 +4,7 @@ export default function DocumentUploadPanel({ documents, onUploadDocument }) {
     const [type, setType] = useState("");
     const [fileName, setFileName] = useState("");
     const [statusMessage, setStatusMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -12,11 +13,13 @@ export default function DocumentUploadPanel({ documents, onUploadDocument }) {
 
         if (!type) {
             setStatusMessage("Please select a document type.");
+            setMessageType("error");
             return;
         }
 
         if (!trimmedName) {
             setStatusMessage("Please enter a file name.");
+            setMessageType("error");
             return;
         }
 
@@ -25,6 +28,7 @@ export default function DocumentUploadPanel({ documents, onUploadDocument }) {
             setStatusMessage(
                 "Allowed file formats: pdf, doc, docx, png, jpg, jpeg."
             );
+            setMessageType("error");
             return;
         }
 
@@ -36,15 +40,19 @@ export default function DocumentUploadPanel({ documents, onUploadDocument }) {
         setType("");
         setFileName("");
         setStatusMessage("Document uploaded successfully.");
+        setMessageType("success");
     };
 
     return (
         <div className="card panel-card">
             <div className="section-header">
-                <h2>Upload Basic Documents</h2>
+                <div>
+                    <span className="section-kicker">Documentation</span>
+                    <h2>Upload Basic Documents</h2>
+                </div>
             </div>
 
-            <form className="form-grid" onSubmit={handleSubmit}>
+            <form className="form-grid two-column-form" onSubmit={handleSubmit}>
                 <div>
                     <label>Document Type</label>
                     <select value={type} onChange={(e) => setType(e.target.value)}>
@@ -66,11 +74,21 @@ export default function DocumentUploadPanel({ documents, onUploadDocument }) {
                     />
                 </div>
 
-                <button className="btn btn-primary" type="submit">
+                <button className="btn btn-primary wide-btn" type="submit">
                     Upload
                 </button>
 
-                {statusMessage && <p className="status-success">{statusMessage}</p>}
+                {statusMessage && (
+                    <p
+                        className={
+                            messageType === "error"
+                                ? "status-danger"
+                                : "status-success"
+                        }
+                    >
+                        {statusMessage}
+                    </p>
+                )}
             </form>
 
             <div className="thread">
