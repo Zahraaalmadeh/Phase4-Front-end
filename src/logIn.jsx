@@ -29,7 +29,13 @@ function LogIn() {
   role: "admin",
   email: "admin@makhzan.com",
   active: true,
-}
+},
+    {username:"manager",
+    password:"1234",
+    role:"Manager",
+    email:"manager@makhzan.com",
+    active:true,
+    }
   ];
 
   const handleSubmit = (e) => {
