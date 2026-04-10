@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "../styles/supplier.css";
 import Layout from "../Layout";
 import SupplierSidebar from "../components/supplier/SupplierSidebar";
-import NotificationList from "../components/supplier/NotificationList";
 import RequestList from "../components/supplier/RequestList";
 import RequestDetails from "../components/supplier/RequestDetails";
 import MessagePanel from "../components/supplier/MessagePanel";
@@ -33,6 +32,13 @@ function getStoredJSON(key, fallbackValue) {
     }
 }
 
+function generateId() {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random()}`;
+}
+
 export default function SupplierPage() {
     const navigate = useNavigate();
 
@@ -50,13 +56,11 @@ export default function SupplierPage() {
         getStoredJSON(STORAGE_KEYS.documents, initialDocuments)
     );
 
-    const [activeTab, setActiveTab] = useState("notifications");
+    const [activeTab, setActiveTab] = useState("requests");
     const [selectedRequestId, setSelectedRequestId] = useState(null);
 
     useEffect(() => {
         const session = getStoredJSON(STORAGE_KEYS.session, null);
-
-        console.log("session from localStorage:", session);
 
         if (!session || typeof session !== "object") {
             navigate("/login");
@@ -121,14 +125,6 @@ export default function SupplierPage() {
         }
     }, [assignedRequests, selectedRequestId]);
 
-    const handleLogout = () => {
-        localStorage.removeItem(STORAGE_KEYS.session);
-        localStorage.removeItem("isLoggedIn");
-        setLoggedInUser(null);
-        setActiveTab("notifications");
-        navigate("/login");
-    };
-
     const addAuditEntry = (requestId, action) => {
         const now = new Date().toLocaleString();
 
@@ -139,7 +135,7 @@ export default function SupplierPage() {
                         ...request,
                         auditHistory: [
                             {
-                                id: crypto.randomUUID(),
+                                id: generateId(),
                                 action,
                                 timestamp: now,
                             },
@@ -183,7 +179,9 @@ export default function SupplierPage() {
                         status:
                             availabilityStatus === "Available"
                                 ? "Confirmed"
-                                : "Under Review",
+                                : availabilityStatus === "Partially Available"
+                                    ? "Under Review"
+                                    : "Under Review",
                     }
                     : request
             )
@@ -227,7 +225,8 @@ export default function SupplierPage() {
                     ? {
                         ...request,
                         status,
-                        trackingNumber: trackingNumber || request.trackingNumber,
+                        trackingNumber:
+                            trackingNumber || request.trackingNumber,
                     }
                     : request
             )
@@ -244,7 +243,7 @@ export default function SupplierPage() {
     const handleSendMessage = ({ requestId, text }) => {
         setMessages((current) => [
             {
-                id: crypto.randomUUID(),
+                id: generateId(),
                 requestId: requestId || "General",
                 sender: "Supplier",
                 text,
@@ -257,7 +256,7 @@ export default function SupplierPage() {
     const handleUploadDocument = ({ type, fileName }) => {
         setDocuments((current) => [
             {
-                id: crypto.randomUUID(),
+                id: generateId(),
                 type,
                 fileName,
                 uploadedAt: new Date().toLocaleString(),
@@ -271,53 +270,78 @@ export default function SupplierPage() {
     }
 
     return (
-        <Layout>
+        <Layout
+            supplierNotifications={assignedNotifications}
+            onOpenSupplierNotification={handleOpenNotification}
+        >
             <div className="supplier-page">
                 <div className="topbar">
                     <div className="topbar-title">
+                        <span className="dashboard-kicker">Supplier Workspace</span>
                         <h1>Supplier Dashboard</h1>
                         <p>
-                            Manage assigned requests, update delivery status, upload
-                            documents, and communicate with the inventory manager.
+                            Review assigned requests, confirm availability,
+                            provide delivery estimates, upload documents, and
+                            communicate with the inventory manager.
                         </p>
                     </div>
-
-                    <button className="btn btn-secondary" onClick={handleLogout}>
-                        Logout
-                    </button>
                 </div>
 
                 <div className="dashboard-grid">
-                    <SupplierSidebar activeTab={activeTab} onChangeTab={setActiveTab} />
+                    <SupplierSidebar
+                        activeTab={activeTab}
+                        onChangeTab={setActiveTab}
+                    />
 
                     <section className="main-panels">
-                        {activeTab === "notifications" && (
-                            <NotificationList
-                                notifications={assignedNotifications}
-                                onOpenNotification={handleOpenNotification}
-                            />
-                        )}
-
                         {activeTab === "requests" && (
                             <div className="card panel-card">
                                 <div className="section-header">
-                                    <h2>Assigned Requests</h2>
+                                    <div>
+                                        <span className="section-kicker">
+                                            Assigned work
+                                        </span>
+                                        <h2>Requests Overview</h2>
+                                    </div>
+
+                                    <div className="summary-pill">
+                                        {assignedRequests.length} Request
+                                        {assignedRequests.length !== 1 ? "s" : ""}
+                                    </div>
                                 </div>
 
-                                <div className="request-layout">
-                                    <RequestList
-                                        requests={assignedRequests}
-                                        selectedRequestId={selectedRequestId}
-                                        onSelect={setSelectedRequestId}
-                                    />
+                                {assignedRequests.length === 0 ? (
+                                    <div className="empty-state">
+                                        <h3>No assigned requests yet</h3>
+                                        <p>
+                                            New supplier requests will appear here
+                                            once they are assigned to you.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="request-layout">
+                                        <div className="request-column">
+                                            <RequestList
+                                                requests={assignedRequests}
+                                                selectedRequestId={selectedRequestId}
+                                                onSelect={setSelectedRequestId}
+                                            />
+                                        </div>
 
-                                    <RequestDetails
-                                        request={selectedRequest}
-                                        onSaveAvailability={handleSaveAvailability}
-                                        onSaveDelivery={handleSaveDelivery}
-                                        onSaveStatus={handleSaveStatus}
-                                    />
-                                </div>
+                                        <div className="details-column">
+                                            <RequestDetails
+                                                request={selectedRequest}
+                                                onSaveAvailability={
+                                                    handleSaveAvailability
+                                                }
+                                                onSaveDelivery={
+                                                    handleSaveDelivery
+                                                }
+                                                onSaveStatus={handleSaveStatus}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
