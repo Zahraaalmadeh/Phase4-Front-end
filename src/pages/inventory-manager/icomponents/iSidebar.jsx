@@ -22,8 +22,8 @@ function Sidebar() {
         </button>
 
         <button
-          className={`nav-btn ${isActive("/inventory") ? "active" : ""}`}
-          onClick={() => navigate("/inventory")}
+          className={`nav-btn ${isActive("/im-inventory") ? "active" : ""}`}
+          onClick={() => navigate("/im-inventory")}
         >
           Inventory
         </button>
