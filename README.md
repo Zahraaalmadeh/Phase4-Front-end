@@ -18,10 +18,10 @@ Use of expired medications
 Delays in treatment
 Makhzan addresses these challenges by offering a centralized, secure, and automated platform that reduces human error and improves decision-making.
 🧑‍🤝‍🧑 Team Members
-Ghadeer Alsanonah
-Manar Al Abbas
-Sarah Alkhalifa
-Zahra Almadeh
+1-Ghadeer Alsanonah
+2-Manar Al Abbas
+3-Sarah Alkhalifa
+4-Zahra Almadeh
 👥 User Roles
 🛠️ System Admin
 Manages users, roles, and permissions
