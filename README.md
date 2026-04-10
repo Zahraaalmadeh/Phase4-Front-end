@@ -103,4 +103,36 @@ Alerts for:
 1. Login using your assigned role  
 2. Navigate to the dashboard  
 3. Manage or view inventory based on your permissions  
-4. Receive alerts and take actions (order, update, etc.)  
+4. Receive alerts and take actions (order, update, etc.)
+
+---
+## ⚙️ Setup and Installation
+
+Follow these steps to run the project locally on your machine:
+
+📥 1. Clone the Repository
+```bash
+git clone <your-repository-url>
+cd makhzan-website
+```
+📦 2. Install Dependencies
+
+Make sure you have Node.js installed, then run:
+```bash
+npm install
+```
+▶️ 3. Start the Development Server
+```bash
+npm run dev
+```
+🌐 4. Open the Application
+
+After starting the server, open the link shown in the terminal, usually:
+http://localhost:5173
+
+⚠️ 5. Windows PowerShell Fix (if needed)
+
+If you encounter a script execution error, run:
+```bash
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
