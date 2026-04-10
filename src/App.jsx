@@ -141,7 +141,7 @@ function App() {
             <Route path="/categories" element={<ManageCategories />} />
             <Route path="/logs" element={<ActivityLogs />} />
             <Route path="/alerts" element={<ConfigureAlerts />} />
-            <Route path="/admin-notifications" element={<ManageNotifications />} />
+            <Route path="/notifications" element={<ManageNotifications />} />
 
             {/* Supplier routes */}
             <Route path="/supplier" element={<SupplierPage />} />
