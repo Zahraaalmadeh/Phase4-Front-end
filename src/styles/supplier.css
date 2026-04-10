@@ -231,7 +231,7 @@
 }
 
 .supplier-page .request-details-card {
-    padding: 1.35rem;
+    padding: 1.4rem;
 }
 
 .supplier-page .request-details-header {
@@ -239,7 +239,7 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
 .supplier-page .request-details-header h3 {
@@ -259,17 +259,18 @@
     background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 0.95rem 1rem;
+    padding: 1rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
 }
 
 .supplier-page .info-label {
     display: block;
     margin-bottom: 6px;
     color: var(--muted);
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
 }
 
 .supplier-page .info-box strong {
@@ -283,6 +284,7 @@
     border-radius: 14px;
     padding: 1rem;
     margin-bottom: 1.2rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
 }
 
 .supplier-page .notes-card p {
@@ -298,8 +300,11 @@
 }
 
 .supplier-page .enhanced-actions {
+    display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
     align-items: start;
+    margin-top: 1rem;
 }
 
 .supplier-page .form-block {
@@ -310,17 +315,21 @@
 }
 
 .supplier-page .polished-form-card {
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
 }
 
 .supplier-page .form-card-header {
     margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #eef3fa;
 }
 
 .supplier-page .form-card-header h4 {
     margin: 0 0 6px;
     color: var(--blue4);
-    font-size: 1.08rem;
+    font-size: 1.05rem;
 }
 
 .supplier-page .form-card-header p {
@@ -516,6 +525,10 @@
     text-align: center;
 }
 
+.supplier-page .empty-state.compact {
+    padding: 1.6rem 1.2rem;
+}
+
 .supplier-page .empty-state h3 {
     margin: 0 0 8px;
     color: var(--blue4);
@@ -553,6 +566,17 @@
 
     .supplier-page .two-column-form {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .supplier-page .request-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .supplier-page .request-details-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 
