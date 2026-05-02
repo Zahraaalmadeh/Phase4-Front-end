@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const availabilitySchema = new mongoose.Schema({
     supplierId: {
@@ -51,4 +51,4 @@ const availabilitySchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('SupplierAvailability', availabilitySchema);
+export default mongoose.model('SupplierAvailability', availabilitySchema);

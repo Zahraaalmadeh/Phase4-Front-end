@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const supplierSchema = new mongoose.Schema({
     supplierId: {
@@ -73,9 +73,9 @@ const supplierSchema = new mongoose.Schema({
     timestamps: true
 });
 
-
+// Index for faster queries
 supplierSchema.index({ email: 1 });
 supplierSchema.index({ supplierId: 1 });
 supplierSchema.index({ isActive: 1 });
 
-module.exports = mongoose.model('Supplier', supplierSchema);
+export default mongoose.model('Supplier', supplierSchema);

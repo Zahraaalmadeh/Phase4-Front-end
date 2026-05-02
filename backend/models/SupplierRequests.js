@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const supplierRequestSchema = new mongoose.Schema({
     requestId: {
@@ -52,4 +52,4 @@ const supplierRequestSchema = new mongoose.Schema({
 supplierRequestSchema.index({ supplierId: 1 });
 supplierRequestSchema.index({ status: 1 });
 
-module.exports = mongoose.model('SupplierRequest', supplierRequestSchema);
+export default mongoose.model('SupplierRequest', supplierRequestSchema);

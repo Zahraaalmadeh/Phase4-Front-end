@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const documentSchema = new mongoose.Schema({
     documentId: {
@@ -46,4 +46,4 @@ const documentSchema = new mongoose.Schema({
 documentSchema.index({ supplierId: 1 });
 documentSchema.index({ documentType: 1 });
 
-module.exports = mongoose.model('SupplierDocument', documentSchema);
+export default mongoose.model('SupplierDocument', documentSchema);
