@@ -65,49 +65,6 @@ router.put("/:id/status", async (req, res) => {
   }
 });
 
-router.put("/:id/status", async (req, res) => {
-  try {
-    const { status, reason } = req.body;
 
-    if (!status) {
-      return res.status(400).json({ message: "Status is required." });
-    }
-
-    if (!["approved", "rejected"].includes(status)) {
-      return res.status(400).json({
-        message: "Status must be either approved or rejected.",
-      });
-    }
-
-    if (status === "rejected" && (!reason || reason.trim() === "")) {
-      return res.status(400).json({
-        message: "Rejection reason is required.",
-      });
-    }
-
-    const updatedRequest = await RequestModel.findByIdAndUpdate(
-      req.params.id,
-      {
-        status,
-        reason: status === "rejected" ? reason : "",
-      },
-      { new: true }
-    );
-
-    if (!updatedRequest) {
-      return res.status(404).json({ message: "Request not found." });
-    }
-
-    res.status(200).json({
-      message: `Request ${status} successfully.`,
-      request: updatedRequest,
-    });
-  } catch (err) {
-    res.status(500).json({
-      message: "Failed to update request status.",
-      error: err.message,
-    });
-  }
-});
 
 export default router;
