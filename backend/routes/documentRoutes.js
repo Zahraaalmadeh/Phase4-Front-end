@@ -8,67 +8,45 @@ import {
 
 const router = express.Router();
 
-// UPLOAD document
-// POST /api/documents/:supplierId
-// Body: { documentId, documentType, fileName, fileSize, filePath, description, expiryDate }
 router.post("/:supplierId", async (req, res) => {
     try {
         const result = await uploadDocument(req.params.supplierId, req.body);
-
-        if (result.success) {
-            res.status(201).json(result);
-        } else {
-            res.status(400).json(result);
-        }
+        res.status(result.success ? 201 : 400).json(result);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 });
 
-// GET supplier documents
-// GET /api/documents/:supplierId?documentType=license
-router.get("/:supplierId", async (req, res) => {
+router.get("/supplier/:supplierId", async (req, res) => {
     try {
-        const result = await getSupplierDocuments(req.params.supplierId, req.query.documentType);
+        const result = await getSupplierDocuments(
+            req.params.supplierId,
+            req.query.documentType
+        );
 
-        if (result.success) {
-            res.status(200).json(result);
-        } else {
-            res.status(404).json(result);
-        }
+        res.status(result.success ? 200 : 404).json(result);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 });
 
-// DELETE document
-// DELETE /api/documents/:documentId
+router.put("/:documentId/verify", async (req, res) => {
+    try {
+        const result = await verifyDocument(
+            req.params.documentId,
+            req.body.isVerified
+        );
+
+        res.status(result.success ? 200 : 404).json(result);
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 router.delete("/:documentId", async (req, res) => {
     try {
         const result = await deleteDocument(req.params.documentId);
-
-        if (result.success) {
-            res.status(200).json(result);
-        } else {
-            res.status(404).json(result);
-        }
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// VERIFY document
-// PUT /api/documents/:documentId/verify
-// Body: { isVerified: true/false }
-router.put("/:documentId/verify", async (req, res) => {
-    try {
-        const result = await verifyDocument(req.params.documentId, req.body.isVerified);
-
-        if (result.success) {
-            res.status(200).json(result);
-        } else {
-            res.status(404).json(result);
-        }
+        res.status(result.success ? 200 : 404).json(result);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
