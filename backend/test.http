@@ -1,0 +1,25 @@
+### Create Supplier
+POST http://localhost:3000/api/suppliers
+Content-Type: application/json
+
+{
+  "supplierId": "SUP001",
+  "companyName": "Green Materials Co",
+  "contactPerson": "Ahmed Ali",
+  "email": "supplier1@example.com",
+  "phone": "+966501234567",
+  "address": "King Road",
+  "city": "Riyadh",
+  "country": "Saudi Arabia",
+  "products": ["cement", "steel"]
+}
+
+###
+
+### Get All Suppliers
+GET http://localhost:3000/api/suppliers
+
+###
+
+### Search Suppliers
+GET http://localhost:3000/api/suppliers/search?term=cement
