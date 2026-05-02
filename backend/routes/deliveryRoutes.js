@@ -4,11 +4,12 @@ import {
     getSupplierRequests,
     updateRequestStatus
 } from "../models/SupplierManager.js";
-
+import { validateRequest } from "../middleware/validation.js";
 const router = express.Router();
 
 
-router.post("/estimate/:supplierId", async (req, res) => {
+// CREATE delivery/request estimate
+router.post("/estimate/:supplierId", validateRequest, async (req, res) => {
     try {
         const requestData = {
             ...req.body,

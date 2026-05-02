@@ -5,13 +5,11 @@ import {
     deleteDocument,
     verifyDocument
 } from "../models/SupplierManager.js";
-
+import { validateDocument } from "../middleware/validation.js";
 const router = express.Router();
 
 // UPLOAD document
-// POST /api/documents/:supplierId
-// Body: { documentId, documentType, fileName, fileSize, filePath, description, expiryDate }
-router.post("/:supplierId", async (req, res) => {
+router.post("/:supplierId", validateDocument, async (req, res) => {
     try {
         const result = await uploadDocument(req.params.supplierId, req.body);
 
@@ -25,8 +23,6 @@ router.post("/:supplierId", async (req, res) => {
     }
 });
 
-// GET supplier documents
-// GET /api/documents/:supplierId?documentType=license
 router.get("/:supplierId", async (req, res) => {
     try {
         const result = await getSupplierDocuments(req.params.supplierId, req.query.documentType);
@@ -41,8 +37,7 @@ router.get("/:supplierId", async (req, res) => {
     }
 });
 
-// DELETE document
-// DELETE /api/documents/:documentId
+
 router.delete("/:documentId", async (req, res) => {
     try {
         const result = await deleteDocument(req.params.documentId);
@@ -57,9 +52,6 @@ router.delete("/:documentId", async (req, res) => {
     }
 });
 
-// VERIFY document
-// PUT /api/documents/:documentId/verify
-// Body: { isVerified: true/false }
 router.put("/:documentId/verify", async (req, res) => {
     try {
         const result = await verifyDocument(req.params.documentId, req.body.isVerified);
