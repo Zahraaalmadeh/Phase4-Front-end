@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Logo from "./assets/Logo2.png";
 import Bell from "./assets/bell.png";
 import HomeIcon from "./assets/home.png";
@@ -15,34 +15,37 @@ function getStoredJSON(key, fallbackValue) {
     }
 }
 
-function Layout({
-                    children,
-                    notifications = [],
-                    onOpenNotification,
-                }) {
+function Layout({ children, onOpenNotification }) {
     const navigate = useNavigate();
-    const location = useLocation();
     const dropdownRef = useRef(null);
 
     const [showNotifications, setShowNotifications] = useState(false);
+    const [fetchedNotifications, setFetchedNotifications] = useState([]);
 
     const session = getStoredJSON("session", null);
     const role = session?.role;
 
-    const unreadCount = useMemo(() => {
-        return notifications.filter((item) => item.unread).length;
-    }, [notifications]);
+    useEffect(() => {
+        fetch("http://localhost:3000/api/admin/notifications")
+            .then((r) => r.json())
+            .then((data) => {
+                if (!Array.isArray(data)) return;
+                const filtered = data.filter(
+                    (n) => n.isActive && (n.targetRole === "all" || n.targetRole === role)
+                );
+                setFetchedNotifications(filtered);
+            })
+            .catch(() => {});
+    }, [role]);
+
+    const unreadCount = fetchedNotifications.length;
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target)
-            ) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowNotifications(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -65,22 +68,19 @@ function Layout({
             navigate("/im-dashboard");
             return;
         }
-
         if (role === "admin") {
             navigate("/dashboard");
         } else if (role === "staff") {
             navigate("/staffDashboard");
         } else if (role === "supplier") {
             navigate("/supplier");
-        }
-        else if (role === "manager") {
+        } else if (role === "manager") {
             navigate("/im-dashboard");
         }
     };
 
     const handleLogout = () => {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
-
         if (confirmLogout) {
             localStorage.removeItem("session");
             navigate("/login");
@@ -114,39 +114,34 @@ function Layout({
                                     <div>
                                         <h4>Notifications</h4>
                                         <p>
-                                            {notifications.length} item
-                                            {notifications.length !== 1 ? "s" : ""}
+                                            {fetchedNotifications.length} item
+                                            {fetchedNotifications.length !== 1 ? "s" : ""}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="notification-popover-list">
-                                    {notifications.length === 0 ? (
+                                    {fetchedNotifications.length === 0 ? (
                                         <div className="notification-empty-card">
                                             <strong>No notifications</strong>
                                             <p>No notifications assigned to you.</p>
                                         </div>
                                     ) : (
-                                        notifications.map((item) => (
+                                        fetchedNotifications.map((item) => (
                                             <button
-                                                key={item.id}
+                                                key={item._id}
                                                 type="button"
-                                                className={`notification-popover-item ${
-                                                    item.unread ? "unread" : ""
-                                                }`}
-                                                onClick={() => handleNotificationClick(item.id)}
+                                                className="notification-popover-item"
+                                                onClick={() => handleNotificationClick(item._id)}
                                             >
                                                 <div className="notification-item-top">
-                                                    <strong>{item.product || item.title}</strong>
+                                                    <strong>{item.title}</strong>
                                                     <span className="notification-request-id">
-                                                        {item.requestId || item.id}
+                                                        {item.type}
                                                     </span>
                                                 </div>
-
                                                 <div className="notification-meta">
-                                                    {item.quantity && <span>Qty: {item.quantity}</span>}
-                                                    {item.urgency && <span>{item.urgency}</span>}
-                                                    {item.date && <span>{item.date}</span>}
+                                                    {item.message && <span>{item.message}</span>}
                                                 </div>
                                             </button>
                                         ))

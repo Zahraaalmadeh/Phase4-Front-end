@@ -4,6 +4,7 @@ import { InventoryModel } from "../models/inventoryStaffDB.js";
 const router = express.Router();
 
 
+
 router.get("/", async (req, res) => {
   try {
     const items = await InventoryModel.find();

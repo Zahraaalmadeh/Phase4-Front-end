@@ -22,6 +22,7 @@ const STORAGE_KEYS = {
     documents: "makhzan_supplier_documents",
 };
 
+
 function getStoredJSON(key, fallbackValue) {
     try {
         const stored = localStorage.getItem(key);
