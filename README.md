@@ -103,7 +103,7 @@ Alerts for:
 1. Login using your assigned role
    - For system admin use
      username : admin
-     password: 1234
+     password: admin123
      
    - For Inventory Manager use
      username : manager
