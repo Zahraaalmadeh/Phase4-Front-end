@@ -5,12 +5,11 @@ import {
     markMessageAsRead,
     getUnreadMessages
 } from "../models/SupplierManager.js";
-import { validateMessage } from "../middleware/validation.js";
+
 const router = express.Router();
 
 
-// SEND message
-router.post("/", validateMessage, async (req, res) => {
+router.post("/", async (req, res) => {
     try {
         const result = await sendMessage(req.body);
 

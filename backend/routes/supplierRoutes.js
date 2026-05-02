@@ -10,7 +10,6 @@ import {
     getSupplierRating,
     updateSupplierRating
 } from "../models/SupplierManager.js";
-import { validateSupplier } from "backend/middleware/validation.js";
 
 const router = express.Router();
 
@@ -81,8 +80,7 @@ router.get("/search/query/:searchTerm", async (req, res) => {
 });
 
 
-
-router.post("/", validateSupplier, async (req, res) => {
+router.post("/", async (req, res) => {
     try {
         const result = await createSupplier(req.body);
 
@@ -96,6 +94,9 @@ router.post("/", validateSupplier, async (req, res) => {
     }
 });
 
+// UPDATE supplier
+// PUT /api/suppliers/:id
+// Body: { companyName, email, phone, address, city, country, products, contactPerson, isActive }
 router.put("/:id", async (req, res) => {
     try {
         const result = await updateSupplier(req.params.id, req.body);
@@ -110,7 +111,8 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-
+// DELETE supplier (soft delete - marks as inactive)
+// DELETE /api/suppliers/:id
 router.delete("/:id", async (req, res) => {
     try {
         const result = await deleteSupplier(req.params.id);
