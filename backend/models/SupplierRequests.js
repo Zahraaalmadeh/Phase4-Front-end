@@ -56,8 +56,8 @@ const supplierRequestSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Keep useful indexes
 supplierRequestSchema.index({ supplierId: 1 });
 supplierRequestSchema.index({ status: 1 });
-supplierRequestSchema.index({ requestId: 1 });
 
 export default mongoose.model("SupplierRequest", supplierRequestSchema);

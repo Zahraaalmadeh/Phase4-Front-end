@@ -1,25 +1,146 @@
-### Create Supplier
-POST http://localhost:3000/api/suppliers
+@baseUrl = http://localhost:3000
+@code = SUP021
+@email = supplier21@example.com
+@docId = DOC021
+@msgId = MSG021
+
+### 1. Create Supplier
+POST {{baseUrl}}/api/suppliers
 Content-Type: application/json
 
 {
-  "supplierId": "SUP001",
-  "companyName": "Green Materials Co",
-  "contactPerson": "Ahmed Ali",
-  "email": "supplier1@example.com",
-  "phone": "+966501234567",
-  "address": "King Road",
-  "city": "Riyadh",
+  "supplierId": "{{code}}",
+  "companyName": "Eco Build Co",
+  "contactPerson": "Fahad Ali",
+  "email": "{{email}}",
+  "password": "123456",
+  "phone": "+966503333333",
+  "address": "Dammam Street",
+  "city": "Dammam",
   "country": "Saudi Arabia",
-  "products": ["cement", "steel"]
+  "products": ["cement", "glass"]
+}
+
+> {%
+    const body = response.body;
+    client.global.set("supplierMongoId", body.data?._id || body.supplier?._id || body._id);
+    client.global.set("supplierCode", body.data?.supplierId || body.supplier?.supplierId || body.supplierId || "SUP020");
+%}
+
+###
+
+### 2. Get All Suppliers
+GET {{baseUrl}}/api/suppliers
+
+###
+
+### 3. Search Suppliers
+GET {{baseUrl}}/api/suppliers/search?term=cement
+
+###
+
+### 4. Get Supplier By Mongo ID
+GET {{baseUrl}}/api/suppliers/{{supplierMongoId}}
+
+###
+
+### 5. Supplier Login
+POST {{baseUrl}}/api/auth/supplier-login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "123456"
+}
+
+> {%
+    const body = response.body;
+    client.global.set("supplierToken", body.token || body.data?.token);
+    client.global.set("supplierMongoId", body.data?.supplier?._id || body.supplier?._id || body.data?._id || client.global.get("supplierMongoId"));
+    client.global.set("supplierCode", body.data?.supplier?.supplierId || body.supplier?.supplierId || body.data?.supplierId || client.global.get("supplierCode"));
+%}
+
+###
+
+### DEBUG - Check saved variables
+GET {{baseUrl}}/api/suppliers/{{supplierMongoId}}
+Authorization: Bearer {{supplierToken}}
+
+###
+
+### 6. Set Availability
+### 6. Set Availability
+POST {{baseUrl}}/api/availability/{{code}}
+Content-Type: application/json
+
+{
+  "availableFrom": "2026-05-01",
+  "availableTo": "2026-06-30",
+  "timeSlots": [
+    {
+      "day": "Monday",
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isAvailable": true
+    }
+  ],
+  "maxCapacity": 100,
+  "currentOrders": 10,
+  "status": "available"
+}
+###
+
+### 7. Get Availability
+GET {{baseUrl}}/api/availability/{{supplierMongoId}}
+Authorization: Bearer {{supplierToken}}
+
+###
+
+### 8. Check Availability - Monday
+GET {{baseUrl}}/api/availability/{{supplierMongoId}}/check?date=2026-05-11
+Authorization: Bearer {{supplierToken}}
+
+###
+
+### 9. Upload Document
+POST {{baseUrl}}/api/documents/{{supplierMongoId}}
+Content-Type: application/json
+Authorization: Bearer {{supplierToken}}
+
+{
+  "documentId": "{{docId}}",
+  "documentType": "license",
+  "fileName": "license.pdf",
+  "fileSize": 1024,
+  "filePath": "/uploads/license.pdf",
+  "description": "Business license"
 }
 
 ###
 
-### Get All Suppliers
-GET http://localhost:3000/api/suppliers
+### 10. Get Documents
+GET {{baseUrl}}/api/documents/supplier/{{supplierMongoId}}
+Authorization: Bearer {{supplierToken}}
 
 ###
 
-### Search Suppliers
-GET http://localhost:3000/api/suppliers/search?term=cement
+### 11. Send Message
+POST {{baseUrl}}/api/messages
+Content-Type: application/json
+Authorization: Bearer {{supplierToken}}
+
+{
+  "messageId": "{{msgId}}",
+  "senderId": "{{supplierMongoId}}",
+  "senderRole": "supplier",
+  "recipientId": "{{supplierMongoId}}",
+  "supplierId": "{{supplierMongoId}}",
+  "subject": "Test Message",
+  "messageContent": "Hello test"
+}
+
+###
+
+### 12. Get Messages
+GET {{baseUrl}}/api/messages/{{supplierMongoId}}/{{supplierMongoId}}
+Authorization: Bearer {{supplierToken}}

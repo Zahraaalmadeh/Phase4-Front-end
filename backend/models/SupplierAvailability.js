@@ -56,8 +56,6 @@ const availabilitySchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-availabilitySchema.index({ supplierId: 1 });
-
 availabilitySchema.pre("save", function (next) {
     if (this.availableFrom > this.availableTo) {
         return next(new Error("availableFrom must be before availableTo"));

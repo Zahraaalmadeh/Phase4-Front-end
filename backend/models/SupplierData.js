@@ -9,6 +9,10 @@ const supplierSchema = new mongoose.Schema(
             trim: true,
             uppercase: true
         },
+        password: {
+            type: String,
+            required: true
+        },
         companyName: {
             type: String,
             required: [true, "Company name is required"],
@@ -69,8 +73,7 @@ const supplierSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-supplierSchema.index({ email: 1 });
-supplierSchema.index({ supplierId: 1 });
+// Only keep indexes that are NOT already covered by `unique`
 supplierSchema.index({ isActive: 1 });
 
 export default mongoose.model("Supplier", supplierSchema);

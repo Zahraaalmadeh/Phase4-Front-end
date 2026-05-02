@@ -50,8 +50,8 @@ const documentSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Keep only necessary indexes
 documentSchema.index({ supplierId: 1 });
 documentSchema.index({ documentType: 1 });
-documentSchema.index({ documentId: 1 });
 
 export default mongoose.model("SupplierDocument", documentSchema);
