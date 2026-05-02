@@ -1,5 +1,3 @@
-import { InventoryManagerItem } from "../models/InventoryManagerItem.js";
-
 import express from "express";
 import { InventoryManagerItem } from "../models/InventoryManagerItem.js";
 
@@ -17,15 +15,6 @@ function getItemStatus(item) {
 
   return "Valid";
 }
-
-router.get("/", async (req, res) => {
-  try {
-    const items = await InventoryManagerItem.find({ removed: false });
-    res.status(200).json(items);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch inventory items" });
-  }
-});
 
 router.post("/", async (req, res) => {
   try {

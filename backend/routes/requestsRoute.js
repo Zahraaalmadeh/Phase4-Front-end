@@ -7,9 +7,9 @@ router.post("/", async (req, res) => {
     const newRequest = await RequestModel.create(req.body);
     res.status(201).json(newRequest);
   }   catch (err) {
-    console.log("🔥 ERROR MESSAGE:", err.message);
-    console.log("🔥 FULL ERROR:", err);
-    console.log("🔥 STACK:", err.stack);
+    console.log(" ERROR MESSAGE:", err.message);
+    console.log(" FULL ERROR:", err);
+    console.log(" STACK:", err.stack);
 
     res.status(500).json({ error: err.message });
   }
