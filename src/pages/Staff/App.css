@@ -42,12 +42,13 @@ p {
 }
 
 
-/* Filter properties for insights and inventory */
 .search-form {
     display: flex;
-    gap: 20px;
+    flex-wrap: wrap; 
+    gap: 15px;
     width: 100%;
-    justify-content: space-between;
+    max-width: 800px; 
+    justify-content: center; 
 }
 select {
     white-space: normal;
@@ -61,8 +62,7 @@ select {
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    justify-content: flex-start;
+    gap: 25px; 
     align-items: center;
 }
 
@@ -71,16 +71,29 @@ select {
     text-align: center;
     margin: 0;
 }
-
+.search-input {
+    flex: 1.5; 
+}
 .search-input,
 .search-select {
-    height: 55px;
+    height: 50px;
     padding: 0 15px;
-    font-size: 1.1rem;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
+    font-size: 1rem;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    min-width: 150px
+    background-color: white;
+    flex: 1; 
+    min-width: 200px; 
+    box-sizing: border-box;
+    color: #333;
+    appearance: none; 
+
+
+}
+select.search-select {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 40px; 
 }
 
 .search-input:focus,
@@ -356,4 +369,85 @@ input[type="text"]:focus {
     color: #856404;
     font-weight: bold;
     margin-bottom: 5px;
+}
+/* ... (Keep your existing variables and base styles) ... */
+
+/* Responsive Media Queries */
+@media screen and (max-width: 1024px) {
+    .insights-container {
+        max-width: 95%;
+    }
+    
+    .table-container {
+        max-width: 95%;
+    }
+
+    .box {
+        width: 40vw; /* Boxes take more space on tablets */
+        height: 25vh;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* General Layout */
+    h1 { font-size: 30px; }
+    h2 { font-size: 32px; }
+    p { font-size: 18px; }
+
+    /* Search & Filters */
+    .search-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-section {
+        flex-direction: column;
+    }
+
+    .search-input, .search-select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Dashboard Boxes */
+    .Dashboard-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .box {
+        width: 90%; /* Stack boxes vertically on mobile */
+        height: auto;
+        min-height: 150px;
+    }
+
+    /* Tables (Make them scrollable horizontally) */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    th, td {
+        padding: 10px;
+        font-size: 16px; /* Smaller text for smaller screens */
+    }
+
+    /* Forms */
+    .add-request-form {
+        padding: 20px;
+        width: 95%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    h2 { font-size: 28px; }
+    
+    .submit-btn {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Forcing tables to be more readable if needed */
+    td {
+        font-size: 14px;
+    }
 }

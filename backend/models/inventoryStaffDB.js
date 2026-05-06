@@ -5,8 +5,14 @@ const inventorySchema = new mongoose.Schema({
   name: String,
   stock: Number,
   expiry: String,
-  dept: String
+  dept: String,
+  Usage: {
+  type: Number,
+  default: 0
+}
 });
+
+
 
 export const InventoryModel = mongoose.model(
   "Inventory",

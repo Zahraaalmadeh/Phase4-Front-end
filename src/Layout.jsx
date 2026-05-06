@@ -22,7 +22,7 @@ function Layout({ children, onOpenNotification }) {
     const [showNotifications, setShowNotifications] = useState(false);
     const [fetchedNotifications, setFetchedNotifications] = useState([]);
 
-    const session = getStoredJSON("session", null);
+    const session = getStoredJSON("staff", null);
     const role = session?.role;
 
     useEffect(() => {
@@ -64,10 +64,7 @@ function Layout({ children, onOpenNotification }) {
     };
 
     const handleHomeClick = () => {
-        if (!session) {
-            navigate("/im-dashboard");
-            return;
-        }
+
         if (role === "admin") {
             navigate("/dashboard");
         } else if (role === "staff") {

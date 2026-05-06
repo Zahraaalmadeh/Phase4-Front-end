@@ -1,69 +1,76 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 function Insights() {
-    const initialData = [
-        { id: 1, title: "Potassium –K", type: "Reagent", department: "Laboratory", usage: "50000 items this month" },
-        { id: 2, title: "BUN/UREA", type: "Reagent", department: "Laboratory", usage: "10000 items this month" },
-        { id: 3, title: "CH Diluent", type: "Reagent", department: "Laboratory", usage: "9000 items this month" }
-    ];
 
-    const [displayData] = useState(initialData);
+    const [displayData, setDisplayData] = useState([]);
     const [selectedDept, setSelectedDept] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [usageFilter, setUsageFilter] = useState("");
 
-    const filteredData = displayData.filter(item => {
-        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+    // Fetch from backend
+    useEffect(() => {
+        fetch("http://localhost:3000/api/insights")
+            .then(res => res.json())
+            .then(data => {
 
-        let matchesUsage = true;
-        const usageNumber = parseInt(item.usage.replace(/\D/g, ''));
-        if (usageFilter === "low") matchesUsage = usageNumber <= 1000;
-        else if (usageFilter === "high") matchesUsage = usageNumber > 10000;
+                const formatted = data.map(item => ({
+                    id: item.id,
+                    title: item.name || "",
+                    type: item.type || "N/A",
+                    department: item.dept || "",
+                    usage: Number(item.Usage ?? item.usage) || 0
+                }));
 
-        let matchesDept = true;
-        if (selectedDept) matchesDept = item.department === selectedDept;
+                setDisplayData(formatted);
+            })
+            .catch(err => console.log("Fetch error:", err));
 
-        return matchesSearch && matchesUsage && matchesDept;
-    });
+    }, []);
+
+    // 🔥 Only items with usage > 2000
+    const filteredData = displayData
+        .filter(item => item.usage > 2000)
+        .filter(item => {
+
+            const matchesSearch =
+                item.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+            const matchesDept =
+                selectedDept ? item.department === selectedDept : true;
+
+            return matchesSearch && matchesDept;
+        })
+        .sort((a, b) => b.usage - a.usage); // optional but important
 
     return (
         <div className="insights-container">
+
             <h2>Insights</h2>
-            <p>Frequently Used Items</p>
+            <p>Frequently Used Items (Usage &gt; 2000)</p>
+
             <div className="search-form">
-                <input 
-                    type="text" 
-                    placeholder="Search..." 
+
+                <input
+                    type="text"
+                    placeholder="Search..."
                     className="search-input"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)} 
+                    onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <select 
-                    className="search-select" 
+
+                <select
+                    className="search-select"
                     value={selectedDept}
-                    onChange={(e) => {
-                        setSelectedDept(e.target.value);
-                        setSearchQuery("");  
-                        setUsageFilter("");   
-                    }}
+                    onChange={(e) => setSelectedDept(e.target.value)}
                 >
                     <option value="">-- Select a Department --</option>
-                    <option value="ph">Pharmacy</option>
-                    <option value="r">Radiology</option>
-                    <option value="bb">Blood Bank</option>
-                    <option value="icu">ICU</option>
+                    <option value="Laboratory">Laboratory</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                    <option value="Radiology">Radiology</option>
+                    <option value="Blood Bank">Blood Bank</option>
+                    <option value="ICU">ICU</option>
                 </select>
 
-                <select 
-                    className="search-select"
-                    value={usageFilter}
-                    onChange={(e) => setUsageFilter(e.target.value)}
-                >
-                    <option value="">All Stock</option>
-                    <option value="low">low usage (≤1000)</option>
-                    <option value="high">High usage (&gt;10000)</option>
-                </select>
             </div>
 
             <div className="table-container">
@@ -76,9 +83,10 @@ function Insights() {
                             <th>Usage</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {filteredData.length > 0 ? (
-                            filteredData.map((item) => (
+                            filteredData.map(item => (
                                 <tr key={item.id}>
                                     <td>{item.title}</td>
                                     <td>{item.type}</td>
@@ -88,14 +96,15 @@ function Insights() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="4">No items match your filters.</td>
+                                <td colSpan="4">No items above 2000 usage.</td>
                             </tr>
                         )}
                     </tbody>
                 </table>
             </div>
+
         </div>
     );
-}   
+}
 
 export default Insights;

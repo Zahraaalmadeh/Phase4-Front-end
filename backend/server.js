@@ -30,12 +30,13 @@ app.get("/", (req, res) => {
   res.send("Server is running...");
 });
 
+// Routes
 app.use("/inventoryStaffDB", inventoryRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use("/api/requests", requestRoutes);
-app.use("/api/requests/my", staffReqRoutes);
+app.use("/api/requests/my", staffReqRoutes); // keep this one
 
 app.use("/api/admin", adminRoutes);
 
@@ -44,6 +45,11 @@ app.use("/api/availability", availabilityRoutes);
 app.use("/api/delivery", deliveryRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/messages", messageRoutes);
+
+// ❌ removed duplicates:
+// app.use("/api/suppliers", supplierRoutes);
+// app.use("/api/availability", availabilityRoutes);
+// app.use("/api/srequests", staffReqRoutes);
 
 const PORT = process.env.PORT || 3000;
 
