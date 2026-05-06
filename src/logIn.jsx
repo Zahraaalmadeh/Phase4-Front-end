@@ -32,7 +32,7 @@ const handleSubmit = async (e) => {
     // save session
     localStorage.setItem("isLoggedIn", "true");
     localStorage.setItem("staff", JSON.stringify(data));
-
+    localStorage.setItem("session", JSON.stringify(data));
     setError("");
 
     // navigation based on role

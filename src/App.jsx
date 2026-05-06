@@ -27,46 +27,9 @@ import ImInventory from "./pages/inventory-manager/ipages/Inventory.jsx";
 import Orders from "./pages/inventory-manager/ipages/Orders.jsx";
 
 function App() {
-    const [users, setUsers] = useState([
-        {
-            id: 1,
-            name: "John Doe",
-            email: "john@email.com",
-            role: "Admin",
-            status: "Active",
-            phone: "",
-            notes: "",
-        },
-        {
-            id: 2,
-            name: "Sarah Ackles",
-            email: "sarah@email.com",
-            role: "Staff",
-            status: "Active",
-            phone: "",
-            notes: "",
-        },
-        {
-            id: 3,
-            name: "Ali Hadi",
-            email: "ali@email.com",
-            role: "Manager",
-            status: "Inactive",
-            phone: "",
-            notes: "",
-        },
-        {
-            id: 4,
-            name: "Mia Cruz",
-            email: "mia@email.com",
-            role: "Supplier",
-            status: "Active",
-            phone: "",
-            notes: "",
-        },
-    ]);
+    
 
-    const [editingUser, setEditingUser] = useState(null);
+
 
     const [items, setItems] = useState(() => {
         const savedItems = localStorage.getItem("items");
@@ -86,28 +49,11 @@ function App() {
         localStorage.setItem("orders", JSON.stringify(orders));
     }, [orders]);
 
-    const addUser = (newUser) => {
-        setUsers((prev) => [...prev, { ...newUser, id: Date.now() }]);
-    };
+    
+    
 
-    const updateUser = (updatedUser) => {
-        setUsers((prev) =>
-            prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-        );
-        setEditingUser(null);
-    };
+    
 
-    const deleteUser = (id) => {
-        setUsers((prev) => prev.filter((user) => user.id !== id));
-    };
-
-    const startEditUser = (user) => {
-        setEditingUser(user);
-    };
-
-    const clearEditingUser = () => {
-        setEditingUser(null);
-    };
 
     return (
         <Routes>
@@ -116,28 +62,10 @@ function App() {
 
             {/* Admin routes */}
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route
-                path="/users"
-                element={
-                    <ManageUsers
-                        users={users}
-                        onDeleteUser={deleteUser}
-                        onEditUser={startEditUser}
-                        onAddUserClick={clearEditingUser}
-                    />
-                }
-            />
-            <Route
-                path="/add-user"
-                element={
-                    <AddUser
-                        onAddUser={addUser}
-                        onUpdateUser={updateUser}
-                        editingUser={editingUser}
-                        clearEditingUser={clearEditingUser}
-                    />
-                }
-            />
+
+            <Route path="/users" element={<ManageUsers />} />
+            <Route path="/add-user" element={<AddUser />} />
+            
             <Route path="/categories" element={<ManageCategories />} />
             <Route path="/logs" element={<ActivityLogs />} />
             <Route path="/alerts" element={<ConfigureAlerts />} />
