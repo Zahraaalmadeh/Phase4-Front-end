@@ -40,7 +40,7 @@ const suppliers = [
 
 const seedSuppliers = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URL);
+        await mongoose.connect(process.env.MONGO_URL || process.env.MONGODB_URL);
         console.log("MongoDB connected");
 
         await Supplier.deleteMany({});
@@ -55,7 +55,7 @@ const seedSuppliers = async () => {
         await Supplier.insertMany(hashedSuppliers);
 
         console.log("Fake suppliers inserted successfully");
-        process.exit();
+        process.exit(0);
     } catch (error) {
         console.error("Seeding failed:", error.message);
         process.exit(1);
