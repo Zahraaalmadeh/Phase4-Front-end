@@ -7,21 +7,27 @@ const supplierSchema = new mongoose.Schema(
             required: [true, "Supplier ID is required"],
             unique: true,
             trim: true,
-            uppercase: true
+            uppercase: true,
         },
+
         password: {
             type: String,
-            required: true
+            required: [true, "Password is required"],
+            trim: true,
         },
+
         companyName: {
             type: String,
             required: [true, "Company name is required"],
-            trim: true
+            trim: true,
         },
+
         contactPerson: {
             type: String,
-            trim: true
+            required: [true, "Contact person is required"],
+            trim: true,
         },
+
         email: {
             type: String,
             required: [true, "Email is required"],
@@ -30,25 +36,34 @@ const supplierSchema = new mongoose.Schema(
             trim: true,
             match: [
                 /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-                "Please provide a valid email"
-            ]
+                "Please provide a valid email",
+            ],
         },
+
         phone: {
             type: String,
-            trim: true
+            required: [true, "Phone number is required"],
+            trim: true,
         },
+
         address: {
             type: String,
-            trim: true
+            required: [true, "Address is required"],
+            trim: true,
         },
+
         city: {
             type: String,
-            trim: true
+            required: [true, "City is required"],
+            trim: true,
         },
+
         country: {
             type: String,
-            trim: true
+            required: [true, "Country is required"],
+            trim: true,
         },
+
         products: {
             type: [String],
             required: true,
@@ -56,24 +71,33 @@ const supplierSchema = new mongoose.Schema(
                 validator: function (v) {
                     return v && v.length > 0;
                 },
-                message: "At least one product category is required"
-            }
+                message: "At least one product category is required",
+            },
         },
+
         rating: {
             type: Number,
             default: 0,
             min: 0,
-            max: 5
+            max: 5,
         },
+
         isActive: {
             type: Boolean,
-            default: true
-        }
+            default: true,
+        },
     },
-    { timestamps: true }
+    {
+        timestamps: true,
+        collection: "suppliers",
+    }
 );
 
-// Only keep indexes that are NOT already covered by `unique`
+// Keep only non-duplicate indexes
+supplierSchema.index({ city: 1 });
+supplierSchema.index({ country: 1 });
 supplierSchema.index({ isActive: 1 });
 
-export default mongoose.model("Supplier", supplierSchema);
+const Supplier = mongoose.model("Supplier", supplierSchema);
+
+export default Supplier;
